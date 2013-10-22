@@ -1,0 +1,146 @@
+@import "compass/typography/vertical_rhythm";
+
+// vertical writing
+$vertical-writing: false !default;
+
+// Apply leading whitespace. The $property can be margin or padding.
+@mixin leader($lines: 1, $font-size: $base-font-size, $property: margin, $is-vert: $vertical-writing) {
+  @if $is-vert == false {
+    #{$property}-top: rhythm($lines, $font-size);
+  } @else {
+    #{$property}-right: rhythm($lines, $font-size);
+  }
+}
+
+// Apply leading whitespace as padding.
+@mixin padding-leader($lines: 1, $font-size: $base-font-size, $is-vert: $vertical-writing) {
+  @if $is-vert == false {
+    padding-top: rhythm($lines, $font-size);
+  } @else {
+    padding-right: rhythm($lines, $font-size);
+  }
+}
+
+// Apply leading whitespace as margin.
+@mixin margin-leader($lines: 1, $font-size: $base-font-size, $is-vert: $vertical-writing) {
+  @if $is-vert == false {
+    margin-top: rhythm($lines, $font-size);
+  } @else {
+    margin-right: rhythm($lines, $font-size);
+  }
+}
+
+// Apply trailing whitespace. The $property can be margin or padding.
+@mixin trailer($lines: 1, $font-size: $base-font-size, $property: margin, $is-vert: $vertical-writing) {
+  @if $is-vert == false {
+    #{$property}-bottom: rhythm($lines, $font-size);
+  } @else {
+    #{$property}-left: rhythm($lines, $font-size);
+  }
+}
+
+// Apply trailing whitespace as padding.
+@mixin padding-trailer($lines: 1, $font-size: $base-font-size, $is-vert: $vertical-writing) {
+  @if $is-vert == false {
+    padding-bottom: rhythm($lines, $font-size);
+  } @else {
+    padding-left: rhythm($lines, $font-size);
+  }
+}
+
+// Apply trailing whitespace as margin.
+@mixin margin-trailer($lines: 1, $font-size: $base-font-size, $is-vert: $vertical-writing) {
+  @if $is-vert == false {
+    margin-bottom: rhythm($lines, $font-size);
+  } @else {
+    margin-left: rhythm($lines, $font-size);
+  }
+}
+
+// Shorthand mixin to apply whitespace for top and bottom margins and padding.
+@mixin rhythm($leader: 0, $padding-leader: 0, $padding-trailer: 0, $trailer: 0, $font-size: $base-font-size, $is-vert: $vertical-writing) {
+  @include leader($leader, $font-size, margin, $is-vert);
+  @include padding-leader($padding-leader, $font-size, $is-vert);
+  @include padding-trailer($padding-trailer, $font-size, $is-vert);
+  @include trailer($trailer, $font-size, margin, $is-vert);
+}
+
+// Apply a border and whitespace to any side without destroying the vertical
+// rhythm. The whitespace must be greater than the width of the border.
+@mixin apply-side-rhythm-border($side, $width: 1px, $lines: 1, $font-size: $base-font-size, $border-style: $default-rhythm-border-style) {
+  @if not $relative-font-sizing and $font-size != $base-font-size {
+    @warn "$relative-font-sizing is false but a relative font size was passed to apply-side-rhythm-border";
+  }
+  border-#{$side}: {
+    style: $border-style;
+    width: $font-unit * $width / $font-size;
+  };
+  padding-#{$side}: rhythm($lines, $font-size, $offset: $width);
+}
+
+// Apply a border and whitespace to any logical side without destroying the
+// rhythm. The whitespace must be greater than the width of the border.
+@mixin apply-logical-side-rhythm-border($logical-side, $width: 1px, $lines: 1, $font-size: $base-font-size, $border-style: $default-rhythm-border-style, $is-vert: $vertical-writing) {
+  @if not $relative-font-sizing and $font-size != $base-font-size {
+    @warn "$relative-font-sizing is false but a relative font size was passed to apply-side-rhythm-border";
+  }
+  @if $is-vert == false {
+    @if $logical-side == before {
+      $side: top;
+      @include apply-side-rhythm-border($side, $width, $lines, $font-size, $border-style);
+    } @else if $logical-side == after {
+      $side: bottom;
+      @include apply-side-rhythm-border($side, $width, $lines, $font-size, $border-style);
+    } @else if $logical-side == start {
+      $side: left;
+      @include apply-side-rhythm-border($side, $width, $lines, $font-size, $border-style);
+      padding-#{$side}: rhythm($lines, $font-size, $offset: $width);
+    } @else if $logical-side == end {
+      @include apply-side-rhythm-border($side, $width, $lines, $font-size, $border-style);
+    }
+  } @else {
+    @if $logical-side == before {
+      $side: right;
+      @include apply-side-rhythm-border($side, $width, $lines, $font-size, $border-style);
+    } @else if $logical-side == after {
+      $side: left;
+      @include apply-side-rhythm-border($side, $width, $lines, $font-size, $border-style);
+    } @else if $logical-side == start {
+      $side: top;
+      @include apply-side-rhythm-border($side, $width, $lines, $font-size, $border-style);
+    } @else if $logical-side == end {
+      $side: bottom;
+      @include apply-side-rhythm-border($side, $width, $lines, $font-size, $border-style);
+    }
+  }
+
+}
+
+// Apply a leading border.
+@mixin leading-border($width: 1px, $lines: 1, $font-size: $base-font-size, $border-style: $default-rhythm-border-style, $is-vert: $vertical-writing) {
+  @if $is-vert == false {
+    @include apply-side-rhythm-border(top, $width, $lines, $font-size, $border-style);
+  } @else {
+    @include apply-side-rhythm-border(right, $width, $lines, $font-size, $border-style);
+  }
+}
+
+// Apply a trailing border.
+@mixin trailing-border($width: 1px, $lines: 1, $font-size: $base-font-size, $border-style: $default-rhythm-border-style, $is-vert: $vertical-writing) {
+  @if $is-vert == false {
+    @include apply-side-rhythm-border(bottom, $width, $lines, $font-size, $border-style);
+  } @else {
+    @include apply-side-rhythm-border(left, $width, $lines, $font-size, $border-style);
+  }
+}
+
+// Apply both leading and trailing borders.
+@mixin horizontal-borders($width: 1px, $lines: 1, $font-size: $base-font-size, $border-style: $default-rhythm-border-style, $is-vert: $vertical-writing) {
+  @include leading-border($width, $lines, $font-size, $border-style, $is-vert);
+  @include trailing-border($width, $lines, $font-size, $border-style, $is-vert);
+}
+
+// Alias for `horizontal-borders` mixin.
+@mixin h-borders($width: 1px, $lines: 1, $font-size: $base-font-size, $border-style: $default-rhythm-border-style, $is-vert: $vertical-writing) {
+  @include horizontal-borders($width, $lines, $font-size, $border-style, $is-vert);
+}
